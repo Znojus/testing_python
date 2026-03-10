@@ -7,12 +7,12 @@ def index():
     user = {'username': 'Alvydas'}
     assignments = [
         {
-            'task_title': {'username': 'John'},
-            'body': 'Beautiful day in Portland!'
+            'task_title': 'Assignment 1',
+            'body': 'Fibonacci sequence'
         },
         {
-            'task_title': {'username': 'Susan'},
-            'body': 'The Avengers movie was so cool!'
+            'task_title': 'Assignment 2',
+            'body': 'FizzBuzz'
         }
     ]
     return render_template('index.html', title='Home', user=user, assignments=assignments)

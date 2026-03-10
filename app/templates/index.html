@@ -4,7 +4,7 @@
     <h1>Hello, {{user.username}}!</h1>
     {% for assignment in assignments %}
     <div>
-        <p>{{assignment.task_title.username}} says: <b>{{assignment.body}}</b></p>
+        <p>{{assignment.task_title}}: <b>{{assignment.body}}</b></p>
     </div>
     {% endfor %}
 {% endblock %}
