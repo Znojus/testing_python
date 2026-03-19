@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, TextAreaField
 from wtforms.validators import DataRequired, ValidationError, Email, EqualTo
 import sqlalchemy as sa
 from app import db
@@ -30,3 +30,8 @@ class RegistrationForm(FlaskForm):
             User.email == email.data))
         if user is not None:
             raise ValidationError('Email already exsists. Please use a different email address.')
+
+class SubmitTaskForm(FlaskForm):
+    title = StringField('Title', validators=[DataRequired()])
+    description = TextAreaField('Task Description', validators=[DataRequired()])
+    submit = SubmitField('Add task')

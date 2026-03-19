@@ -1,10 +1,10 @@
 from app import app
 from flask import render_template, flash, redirect, url_for, request
-from app.forms import LoginForm, RegistrationForm
+from app.forms import LoginForm, RegistrationForm, SubmitTaskForm
 from flask_login import current_user, login_user, logout_user, login_required
 import sqlalchemy as sa
 from app import db
-from app.models import User
+from app.models import User, Task
 from urllib.parse import urlsplit
 
 @app.route('/')
@@ -59,3 +59,22 @@ def register():
         flash('Congratulations, you are now a registered user!')
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
+
+@app.route('/create-task', methods=['GET', 'POST'])
+@login_required
+def create_task():
+    if current_user.role != 'lecturer':
+        flash('Only lecturers can create tasks.')
+        return (redirect(url_for('index')))
+    form = SubmitTaskForm()
+    if form.validate_on_submit():
+        task = Task(
+            title = form.title.data,
+            description = form.description.data,
+            created_by = current_user.id
+            )
+        db.session.add(task)
+        db.session.commit()
+        flash('Task created!')
+        return redirect(url_for('index'))
+    return render_template('create_task.html', form=form)
