@@ -35,3 +35,7 @@ class SubmitTaskForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired()])
     description = TextAreaField('Task Description', validators=[DataRequired()])
     submit = SubmitField('Add task')
+
+class TestCaseForm(FlaskForm):
+    input_data = TextAreaField('Standard Input', validators=[DataRequired()])
+    expected_output = TextAreaField('Expected Output', validators=[DataRequired()])

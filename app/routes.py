@@ -1,10 +1,10 @@
 from app import app
 from flask import render_template, flash, redirect, url_for, request
-from app.forms import LoginForm, RegistrationForm, SubmitTaskForm
+from app.forms import LoginForm, RegistrationForm, SubmitTaskForm, TestCaseForm
 from flask_login import current_user, login_user, logout_user, login_required
 import sqlalchemy as sa
 from app import db
-from app.models import User, Task
+from app.models import User, Task, TestCase
 from urllib.parse import urlsplit
 
 @app.route('/')
@@ -78,3 +78,29 @@ def create_task():
         flash('Task created!')
         return redirect(url_for('index'))
     return render_template('create_task.html', form=form)
+
+@app.route('/task/<int:task_id/>', methods=['GET', 'POST'])
+@login_required
+def task_view(task_id):
+    task = db.session.get(Task, task_id)
+    test_cases = db.session.execute(
+        sa.select(TestCase).where(TestCase.task_id == task_id)
+    ).scalars().all()
+    return render_template('task.html', task=task, test_cases=test_cases)
+
+@app.route('/task/<int:task_id/add-test>', methods=['GET', 'POST'])
+@login_required
+def add_test_case(task_id):
+    if current_user.role != 'lecturer':
+        return (redirect(url_for('index')))
+    form = TestCaseForm()
+    if form.validate_on_submit():
+        test = TestCase(
+            task_id = task_id,
+            input_data = form.input_data.data,
+            expected_output = form.expected_output.data
+            )
+        db.session.add(test)
+        db.session.commit()
+        flash('Test case added!')
+    return render_template('add_test_case.html', form=form, task_id=task_id)
