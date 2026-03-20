@@ -1,10 +1,10 @@
 from app import app
 from flask import render_template, flash, redirect, url_for, request
-from app.forms import LoginForm, RegistrationForm, SubmitTaskForm, TestCaseForm
+from app.forms import LoginForm, RegistrationForm, SubmitTaskForm, TestCaseForm, SubmissionForm
 from flask_login import current_user, login_user, logout_user, login_required
 import sqlalchemy as sa
 from app import db
-from app.models import User, Task, TestCase
+from app.models import User, Task, TestCase, Submission
 from urllib.parse import urlsplit
 
 @app.route('/')
@@ -98,7 +98,27 @@ def add_test_case(task_id):
         flash('Test case added!')
     return render_template('add_test_case.html', form=form, task_id=task_id)
 
-@app.route('/task/<int:task_id>/submit')
+@app.route('/task/<int:task_id>/submit', methods=['GET', 'POST'])
 @login_required
 def submit_solution(task_id):
-    return "To be implemented"
+    if current_user.role != 'student':
+        return redirect(url_for('index'))
+    form = SubmissionForm()
+    if form.validate_on_submit():
+        file = form.code_file.data
+        code = file.read().decode('utf-8')
+
+        if len(code) > 50000:
+            flash('File is too large')
+            return redirect(url_for('submit_solution', task_id=task_id))
+        
+        submission = Submission(
+        task_id = task_id,
+        user_id = current_user.id,
+        code = code,
+        )
+        db.session.add(submission)
+        db.session.commit()
+        flash('Code submitted!')
+        return redirect(url_for('task_view', task_id = task_id))
+    return render_template('submit_solution.html', form = form, task_id = task_id)

@@ -4,6 +4,7 @@ from wtforms.validators import DataRequired, ValidationError, Email, EqualTo
 import sqlalchemy as sa
 from app import db
 from app.models import User
+from flask_wtf.file import FileField, FileAllowed, FileRequired
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
@@ -40,3 +41,7 @@ class TestCaseForm(FlaskForm):
     input_data = TextAreaField('Standard Input', validators=[DataRequired()])
     expected_output = TextAreaField('Expected Output', validators=[DataRequired()])
     submit = SubmitField('Add task')
+
+class SubmissionForm(FlaskForm):
+    code_file = FileField('Upload .py file', validators=[FileRequired(), FileAllowed(['py'], 'Only .py files')])
+    submit = SubmitField('Submit Solution')
