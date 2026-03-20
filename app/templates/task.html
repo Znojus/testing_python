@@ -11,6 +11,12 @@
         {% endfor %}
         <a href="{{ url_for('add_test_case', task_id=task.id) }}">Add Test Case</a>
     {% elif current_user.role == 'student' %}
+    <h2>Example Test Cases</h2>
+    {% for test in test_cases[:2] %}
+        <p>Input: {{ test.input_data }}</p>
+        <p>Expected Output: {{ test.expected_output }}</p>
+    {% endfor %}
+    <p><i>+ {{ test_cases|length - 2 }} hidden test cases</i></p>
     <a href="{{ url_for('submit_solution', task_id=task.id) }}">Submit Solution</a>
     {% endif %}
 {% endblock %}

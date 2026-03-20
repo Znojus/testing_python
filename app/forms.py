@@ -39,3 +39,4 @@ class SubmitTaskForm(FlaskForm):
 class TestCaseForm(FlaskForm):
     input_data = TextAreaField('Standard Input', validators=[DataRequired()])
     expected_output = TextAreaField('Expected Output', validators=[DataRequired()])
+    submit = SubmitField('Add task')

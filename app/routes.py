@@ -78,7 +78,7 @@ def task_view(task_id):
     ).scalars().all()
     return render_template('task.html', task=task, test_cases=test_cases)
 
-@app.route('/task/<int:task_id>/add-test>', methods=['GET', 'POST'])
+@app.route('/task/<int:task_id>/add-test', methods=['GET', 'POST'])
 @login_required
 def add_test_case(task_id):
     if current_user.role != 'lecturer':
