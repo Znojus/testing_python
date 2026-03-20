@@ -2,9 +2,18 @@
 
 {% block content %}
     <h1>Hello, {{current_user.username}}!</h1>
-    {% for assignment in assignments %}
+    <h2>Here are the available tasks</h2>
+    {% for task in tasks %}
+    <hr>
     <div>
-        <p>{{assignment.task_title}}: <b>{{assignment.body}}</b></p>
+        <h3>{{ task.title }}</h3>
+        <p>{{ task.description }}</p>
+        <a href="{{ url_for('task_view', task_id = task.id) }}">View Task</a>
     </div>
+    <hr>
     {% endfor %}
+
+    {% if current_user.role == 'lecturer' %}
+        <a href="{{ url_for('create_task') }}">Create New Task</a>
+    {% endif %}
 {% endblock %}

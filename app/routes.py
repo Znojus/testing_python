@@ -11,18 +11,8 @@ from urllib.parse import urlsplit
 @app.route('/index')
 @login_required
 def index():
-    user = {'username': 'Alvydas'}
-    assignments = [
-        {
-            'task_title': 'Assignment 1',
-            'body': 'Fibonacci sequence'
-        },
-        {
-            'task_title': 'Assignment 2',
-            'body': 'FizzBuzz'
-        }
-    ]
-    return render_template('index.html', title='Home', assignments=assignments)
+    tasks = db.session.execute(sa.select(Task)).scalars().all()
+    return render_template('index.html', title='Home', tasks=tasks)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -79,7 +69,7 @@ def create_task():
         return redirect(url_for('index'))
     return render_template('create_task.html', form=form)
 
-@app.route('/task/<int:task_id/>', methods=['GET', 'POST'])
+@app.route('/task/<int:task_id>', methods=['GET', 'POST'])
 @login_required
 def task_view(task_id):
     task = db.session.get(Task, task_id)
@@ -88,7 +78,7 @@ def task_view(task_id):
     ).scalars().all()
     return render_template('task.html', task=task, test_cases=test_cases)
 
-@app.route('/task/<int:task_id/add-test>', methods=['GET', 'POST'])
+@app.route('/task/<int:task_id>/add-test>', methods=['GET', 'POST'])
 @login_required
 def add_test_case(task_id):
     if current_user.role != 'lecturer':
@@ -104,3 +94,8 @@ def add_test_case(task_id):
         db.session.commit()
         flash('Test case added!')
     return render_template('add_test_case.html', form=form, task_id=task_id)
+
+@app.route('/task/<int:task_id>/submit')
+@login_required
+def submit_solution(task_id):
+    return "To be implemented"

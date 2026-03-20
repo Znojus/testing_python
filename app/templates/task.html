@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>{{ task.title }}</h1>
+    <p>{{ task.description }}</p>
+    {% if current_user.role == 'lecturer' %}
+        <h2>Test Cases</h2>
+        {% for test in test_cases %}
+            <p>Input: {{ test.input_data }}</p>
+            <p>Expected Output: {{ test.expected_output }}</p>
+        {% endfor %}
+        <a href="{{ url_for('add_test_case', task_id=task.id) }}">Add Test Case</a>
+    {% elif current_user.role == 'student' %}
+    <a href="{{ url_for('submit_solution', task_id=task.id) }}">Submit Solution</a>
+    {% endif %}
+{% endblock %}
