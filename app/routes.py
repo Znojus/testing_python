@@ -73,6 +73,9 @@ def create_task():
 @login_required
 def task_view(task_id):
     task = db.session.get(Task, task_id)
+    if task is None:
+        flash('Task not found.')
+        return redirect(url_for('index'))
     test_cases = db.session.execute(
         sa.select(TestCase).where(TestCase.task_id == task_id)
     ).scalars().all()
