@@ -8,6 +8,7 @@
         {% for test in test_cases %}
             <p>Input: {{ test.input_data }}</p>
             <p>Expected Output: {{ test.expected_output }}</p>
+            <hr>
         {% endfor %}
         <a href="{{ url_for('add_test_case', task_id=task.id) }}">Add Test Case</a>
     {% elif current_user.role == 'student' %}
