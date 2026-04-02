@@ -114,9 +114,13 @@ def submit_solution(task_id):
             flash('File is too large')
             return redirect(url_for('submit_solution', task_id=task_id))
         
-        # db.session.add(submission)
-        # db.session.commit()
-        # flash('Code submitted!')
+        submission = Submission(
+            task_id=task_id,
+            user_id=student_id,
+            code=code,
+            result="PENDING"
+        )
+        db.session.add(submission)
 
         #testavimas ----------------
         test_cases = db.session.execute(
@@ -129,6 +133,7 @@ def submit_solution(task_id):
         ]
 
         db.session.commit()
+        submission_id = submission.id
 
         results = []
         all_passed = True
@@ -146,14 +151,8 @@ def submit_solution(task_id):
             if not passed:
                 all_passed = False
 
-        submission = Submission(
-            task_id = task_id,
-            user_id = student_id,
-            code = code,
-            result = "PASSED" if all_passed else "FAILED"
-        )
-        db.session.add(submission)
-        db.session.commit()
+        submission_to_update = db.session.get(Submission, submission_id)
+        submission_to_update.result = "PASSED" if all_passed else "FAILED"
 
         return render_template('results.html', results=results, submission=submission, task_id=task_id)
 
