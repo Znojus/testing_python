@@ -6,6 +6,7 @@ import sqlalchemy as sa
 from app import db
 from app.models import User, Task, TestCase, Submission
 from urllib.parse import urlsplit
+from app.docker_runner import run_student_code
 
 @app.route('/')
 @app.route('/index')
@@ -120,5 +121,31 @@ def submit_solution(task_id):
         db.session.add(submission)
         db.session.commit()
         flash('Code submitted!')
-        return redirect(url_for('task_view', task_id = task_id))
+
+        #testavimas ----------------
+        test_cases = db.session.execute(
+            sa.select(TestCase).where(TestCase.task_id == task_id)
+        ).scalars().all()
+
+        results = []
+        all_passed = True
+        for test in test_cases:
+            result = run_student_code(code, test.input_data)
+            passed = (result["status"] == "SUCCESS" 
+                     and result["output"] == test.expected_output.strip())
+            results.append({
+                "input": test.input_data,
+                "expected": test.expected_output,
+                "actual": result["output"],
+                "status": result["status"],
+                "passed": passed
+            })
+            if not passed:
+                all_passed = False
+
+        submission.result = "PASSED" if all_passed else "FAILED"
+        db.session.commit()
+
+        return render_template('results.html', results=results, submission=submission, task_id=task_id)
+
     return render_template('submit_solution.html', form = form, task_id = task_id)
