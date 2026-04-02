@@ -40,12 +40,3 @@ def run_student_code(code, input_data, timeout=10):
             return {"status": "ERROR", "output": f"Docker error: {str(e)}"}
         except Exception as e:
             return {"status": "ERROR", "output": f"System error: {str(e)}"}
-
-code = """
-x = input()
-for y in x:
-    print(y)
-"""
-
-result = run_student_code(code, "[10, 20, 30, 40]", "10")
-print(result)
