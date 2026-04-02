@@ -104,6 +104,7 @@ def add_test_case(task_id):
 def submit_solution(task_id):
     if current_user.role != 'student':
         return redirect(url_for('index'))
+    student_id = current_user.id
     form = SubmissionForm()
     if form.validate_on_submit():
         file = form.code_file.data
@@ -113,29 +114,31 @@ def submit_solution(task_id):
             flash('File is too large')
             return redirect(url_for('submit_solution', task_id=task_id))
         
-        submission = Submission(
-        task_id = task_id,
-        user_id = current_user.id,
-        code = code,
-        )
-        db.session.add(submission)
-        db.session.commit()
-        flash('Code submitted!')
+        # db.session.add(submission)
+        # db.session.commit()
+        # flash('Code submitted!')
 
         #testavimas ----------------
         test_cases = db.session.execute(
             sa.select(TestCase).where(TestCase.task_id == task_id)
         ).scalars().all()
 
+        tests_data = [
+            {"input": t.input_data, "expected": t.expected_output}
+            for t in test_cases
+        ]
+
+        db.session.commit()
+
         results = []
         all_passed = True
-        for test in test_cases:
-            result = run_student_code(code, test.input_data)
+        for test in tests_data:
+            result = run_student_code(code, test["input"])
             passed = (result["status"] == "SUCCESS" 
-                     and result["output"] == test.expected_output.strip())
+                     and result["output"] == test["expected"].strip())
             results.append({
-                "input": test.input_data,
-                "expected": test.expected_output,
+                "input": test["input"],
+                "expected": test["expected"],
                 "actual": result["output"],
                 "status": result["status"],
                 "passed": passed
@@ -143,7 +146,13 @@ def submit_solution(task_id):
             if not passed:
                 all_passed = False
 
-        submission.result = "PASSED" if all_passed else "FAILED"
+        submission = Submission(
+            task_id = task_id,
+            user_id = student_id,
+            code = code,
+            result = "PASSED" if all_passed else "FAILED"
+        )
+        db.session.add(submission)
         db.session.commit()
 
         return render_template('results.html', results=results, submission=submission, task_id=task_id)
