@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Result: {{ submission.result }}</h1>
+    {% for r in results %}
+        <div>
+            <p>
+                {% if r.passed %} OK {% else %} NOT PASSED {% endif %}
+                Status: {{ r.status }}
+            </p>
+            <p>Input: {{ r.input }}</p>
+            <p>Expected: {{ r.expected }}</p>
+            <p>Got: {{ r.actual }}</p>
+        </div>
+        <hr>
+    {% endfor %}
+    <a href="{{ url_for('task_view', task_id=task_id) }}">Back to task</a>
+{% endblock %}
