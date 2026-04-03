@@ -1,8 +1,7 @@
 import docker, tempfile, os
 
-client = docker.from_env()
-
 def run_student_code(code, input_data, timeout=10):
+    client = docker.from_env()
 
     with tempfile.TemporaryDirectory() as tmpdir:
         with open(os.path.join(tmpdir, "solution.py"), "w") as file:
