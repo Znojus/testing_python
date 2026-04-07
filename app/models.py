@@ -53,9 +53,29 @@ class Submission(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
     task_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('task.id'), index=True)
     user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('user.id'), index=True)
+    exam_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('exam.id'), index=True, nullable=True)
     code: so.Mapped[str] = so.mapped_column(sa.Text)
     result: so.Mapped[str] = so.mapped_column(sa.String(20), default="PENDING")
     submitted_at: so.Mapped[datetime] = so.mapped_column(index=True, default=datetime.utcnow)
 
     def __repr__(self):
         return '<Submission by User {} for Task {}>'.format(self.user_id, self.task_id)
+    
+class Exam(db.Model):
+    id: so.Mapped[int] = so.mapped_column(primary_key=True)
+    title: so.Mapped[str] = so.mapped_column(sa.String(200))
+    type: so.Mapped[str] = so.mapped_column(sa.String(20))
+    created_by: so.Mapped[int] = so.mapped_column(sa.ForeignKey('user.id'), index=True)
+    docker_image: so.Mapped[Optional[str]] = so.mapped_column(sa.String(200))
+    allow_requirements: so.Mapped[bool] = so.mapped_column(default=False)
+    created_at: so.Mapped[datetime] = so.mapped_column(index=True, default=datetime.utcnow)
+
+class ExamTask(db.Model):
+    id: so.Mapped[int] = so.mapped_column(primary_key=True)
+    exam_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('exam.id'), index=True)
+    task_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('task.id'), index=True)
+
+class ExamStudent(db.Model):
+    id: so.Mapped[int] = so.mapped_column(primary_key=True)
+    exam_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('exam.id'), index=True)
+    student_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('user.id'), index=True)
