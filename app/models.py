@@ -34,6 +34,7 @@ class Task(db.Model):
     description: so.Mapped[str] = so.mapped_column(sa.Text)
     created_by: so.Mapped[int] = so.mapped_column(sa.ForeignKey('user.id'), index=True)
     created_at: so.Mapped[datetime] = so.mapped_column(index=True, default=datetime.utcnow)
+    show_examples: so.Mapped[bool] = so.mapped_column(default=True, server_default=sa.text('1'))
 
     def __repr__(self):
         return '<Task {}>'.format(self.title)

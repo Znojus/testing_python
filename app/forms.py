@@ -35,6 +35,7 @@ class RegistrationForm(FlaskForm):
 class SubmitTaskForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired()])
     description = TextAreaField('Task Description', validators=[DataRequired()])
+    show_examples = BooleanField('Show test case examples to students', default=True)
     submit = SubmitField('Add task')
 
 class TestCaseForm(FlaskForm):

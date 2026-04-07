@@ -62,7 +62,8 @@ def create_task():
         task = Task(
             title = form.title.data,
             description = form.description.data,
-            created_by = current_user.id
+            created_by = current_user.id,
+            show_examples=form.show_examples.data
             )
         db.session.add(task)
         db.session.commit()
