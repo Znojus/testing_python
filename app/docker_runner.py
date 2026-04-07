@@ -17,6 +17,7 @@ def run_student_code(code, input_data, timeout=10):
                 remove=True,
                 mem_limit="128m",
                 memswap_limit="128m",
+                nano_cpus=500000000,
                 network_disabled=True,
                 read_only=True,
                 pids_limit=10,

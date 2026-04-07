@@ -153,7 +153,8 @@ def submit_solution(task_id):
 
         submission_to_update = db.session.get(Submission, submission_id)
         submission_to_update.result = "PASSED" if all_passed else "FAILED"
+        db.session.commit()
 
-        return render_template('results.html', results=results, submission=submission, task_id=task_id)
+        return render_template('results.html', results=results, submission=submission_to_update, task_id=task_id)
 
     return render_template('submit_solution.html', form = form, task_id = task_id)
