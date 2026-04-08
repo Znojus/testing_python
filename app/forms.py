@@ -5,6 +5,7 @@ import sqlalchemy as sa
 from app import db
 from app.models import User
 from flask_wtf.file import FileField, FileAllowed, FileRequired
+from wtforms.fields import DateTimeLocalField
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
@@ -46,3 +47,12 @@ class TestCaseForm(FlaskForm):
 class SubmissionForm(FlaskForm):
     code_file = FileField('Upload .py file', validators=[FileRequired(), FileAllowed(['py'], 'Only .py files')])
     submit = SubmitField('Submit Solution')
+
+class ExamForm(FlaskForm):
+    title = StringField('Title', validators=[DataRequired()])
+    type = SelectField('Type', choices=[('homework', 'Homework'), ('test', 'Test'),
+                                        ('exam', 'Exam')])
+    deadline = DateTimeLocalField('Deadline (optional)')
+    docker_image = StringField('Docker Image (optional)')
+    allow_requirements = BooleanField('Allow students to upload requirements.txt')
+    submit = SubmitField('Create Exam')

@@ -1,12 +1,13 @@
 from app import app
 from flask import render_template, flash, redirect, url_for, request
-from app.forms import LoginForm, RegistrationForm, SubmitTaskForm, TestCaseForm, SubmissionForm
+from app.forms import LoginForm, RegistrationForm, SubmitTaskForm, TestCaseForm, SubmissionForm, ExamForm
 from flask_login import current_user, login_user, logout_user, login_required
 import sqlalchemy as sa
 from app import db
-from app.models import User, Task, TestCase, Submission, Exam, ExamStudent
+from app.models import User, Task, TestCase, Submission, Exam, ExamStudent, ExamTask
 from urllib.parse import urlsplit
 from app.docker_runner import run_student_code
+import docker
 
 @app.route('/')
 @app.route('/index')
@@ -172,7 +173,52 @@ def submit_solution(task_id):
 def exam_view(exam_id):
     return "To be implemented."
 
-@app.route('/create-exam')
+@app.route('/create-exam', methods=['GET', 'POST'])
 @login_required
 def create_exam():
-    return "To be implemented."
+    if current_user.role != 'lecturer':
+        return redirect(url_for('index'))
+    form = ExamForm()
+
+    tasks = db.session.execute(sa.select(Task)).scalars().all()
+    students = db.session.execute(
+        sa.select(User).where(User.role == 'student')
+    ).scalars().all()
+
+    if form.validate_on_submit():
+        if form.docker_image.data:
+            try:
+                client = docker.from_env()
+                client.images.get(form.docker_image.data)
+            except docker.errors.ImageNotFound:
+                flash(f'Docker image "{form.docker_image.data}" not found! Build it first.')
+                return render_template('create_exam.html', form=form, tasks=tasks, students=students)
+            except docker.errors.APIError:
+                flash('Could not connect to Docker. Is Docker Desktop running?')
+                return render_template('create_exam.html', form=form, tasks=tasks, students=students)
+
+        exam = Exam(
+            title=form.title.data,
+            type=form.type.data,
+            created_by=current_user.id,
+            deadline=form.deadline.data,
+            docker_image=form.docker_image.data or None,
+            allow_requirements=form.allow_requirements.data
+        )
+        db.session.add(exam)
+        db.session.commit()
+
+        selected_tasks = request.form.getlist('tasks')
+        for task_id in selected_tasks:
+            db.session.add(ExamTask(exam_id=exam.id, task_id=int(task_id)))
+
+        selected_students = request.form.getlist('students')
+        for student_id in selected_students:
+            db.session.add(ExamStudent(exam_id=exam.id, student_id=int(student_id)))
+
+        db.session.commit()
+        flash('Exam created!')
+        return redirect(url_for('index'))
+
+    return render_template('create_exam.html', form=form, tasks=tasks, students=students)
+

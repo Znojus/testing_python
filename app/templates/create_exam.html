@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Create Exam</h1>
+    <form action="" method="post" novalidate>
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.title.label }}<br>
+            {{ form.title(size=64) }}<br>
+            {% for error in form.title.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.type.label }}<br>
+            {{ form.type() }}
+        </p>
+        <p>
+            {{ form.deadline.label }}<br>
+            {{ form.deadline() }}
+        </p>
+        <p>
+            {{ form.docker_image.label }}<br>
+            {{ form.docker_image(size=64, placeholder="python:3.11-slim") }}
+        </p>
+        <p>
+            {{ form.allow_requirements() }} {{ form.allow_requirements.label }}
+        </p>
+
+        <h2>Select Tasks</h2>
+        {% if tasks %}
+            {% for task in tasks %}
+            <p>
+                <input type="checkbox" name="tasks" value="{{ task.id }}">
+                {{ task.title }}
+            </p>
+            {% endfor %}
+        {% else %}
+            <p>No tasks yet. <a href="{{ url_for('create_task') }}">Create one first.</a></p>
+        {% endif %}
+
+        <h2>Select Students</h2>
+        {% if students %}
+            {% for student in students %}
+            <p>
+                <input type="checkbox" name="students" value="{{ student.id }}">
+                {{ student.username }}
+                {% if student.group %}({{ student.group }}){% endif %}
+            </p>
+            {% endfor %}
+        {% else %}
+            <p>No students registered yet.</p>
+        {% endif %}
+
+        <p>{{ form.submit() }}</p>
+    </form>
+{% endblock %}
