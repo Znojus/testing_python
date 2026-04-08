@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Hello, {{ current_user.username }}!</h1>
+
+    <h2>Your assignments</h2>
+    {% if exams %}
+        {% for exam in exams %}
+            <div>
+                <h3>{{ exam.title }} ({{ exam.type }})</h3>
+                {% if exam.deadline %}
+                    <p>Deadline: {{ exam.deadline.strftime('%Y-%m-%d %H:%M') }}</p>
+                {% endif %}
+                <a href="{{ url_for('exam_view', exam_id=exam.id) }}">Open</a>
+            </div>
+            <hr>
+        {% endfor %}
+    {% else %}
+        <p>No assignments yet.</p>
+    {% endif %}
+{% endblock %}

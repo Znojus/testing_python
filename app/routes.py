@@ -4,7 +4,7 @@ from app.forms import LoginForm, RegistrationForm, SubmitTaskForm, TestCaseForm,
 from flask_login import current_user, login_user, logout_user, login_required
 import sqlalchemy as sa
 from app import db
-from app.models import User, Task, TestCase, Submission
+from app.models import User, Task, TestCase, Submission, Exam, ExamStudent
 from urllib.parse import urlsplit
 from app.docker_runner import run_student_code
 
@@ -12,8 +12,15 @@ from app.docker_runner import run_student_code
 @app.route('/index')
 @login_required
 def index():
-    tasks = db.session.execute(sa.select(Task)).scalars().all()
-    return render_template('index.html', title='Home', tasks=tasks)
+    if current_user.role == 'lecturer':
+        tasks = db.session.execute(sa.select(Task)).scalars().all()
+        exams = db.session.execute(sa.select(Exam)).scalars().all()
+        return render_template('index.html', tasks=tasks, exams=exams)
+    else:
+        exams = db.session.execute(
+            sa.select(Exam).join(ExamStudent).where(ExamStudent.student_id == current_user.id)
+        ).scalars().all()
+        return render_template('student_index.html', exams=exams)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -159,3 +166,13 @@ def submit_solution(task_id):
         return render_template('results.html', results=results, submission=submission_to_update, task_id=task_id)
 
     return render_template('submit_solution.html', form = form, task_id = task_id)
+
+@app.route('/exam/<int:exam_id>')
+@login_required
+def exam_view(exam_id):
+    return "To be implemented."
+
+@app.route('/create-exam')
+@login_required
+def create_exam():
+    return "To be implemented."
