@@ -135,6 +135,7 @@ def submit_solution(exam_id, task_id):
         submission = Submission(
             task_id=task_id,
             user_id=student_id,
+            exam_id=exam_id, 
             code=code,
             result="PENDING"
         )
