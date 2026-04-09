@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>{{ exam.title }} ({{ exam.type }})</h1>
+
+    {% if exam.deadline %}
+        <p>Deadline: {{ exam.deadline.strftime('%Y-%m-%d %H:%M') }}</p>
+    {% endif %}
+
+    <h2>Tasks</h2>
+    {% for task in tasks %}
+        <div>
+            {% if task.id in solved_task_ids %}
+                <span style="color: green;">PASSED</span>
+            {% elif task.id in attempted_task_ids %}
+                <span style="color: red;">NOT PASSED</span>
+            {% else %}
+                <span style="color: gray;">UNATTEMPTED</span>
+            {% endif %}
+
+            <a href="{{ url_for('task_view', task_id=task.id, exam_id=exam.id) }}">{{ task.title }}</a>
+
+            {% if task.id in solved_task_ids %}
+                <span style="color: green;">(Solved)</span>
+            {% elif task.id in attempted_task_ids %}
+                <span style="color: red;">(Attempted)</span>
+            {% else %}
+                <span style="color: gray;">(Not attempted)</span>
+            {% endif %}
+        </div>
+    {% endfor %}
+
+    <a href="{{ url_for('index') }}">Back</a>
+{% endblock %}

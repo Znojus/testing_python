@@ -8,6 +8,7 @@ from app.models import User, Task, TestCase, Submission, Exam, ExamStudent, Exam
 from urllib.parse import urlsplit
 from app.docker_runner import run_student_code
 import docker
+from datetime import datetime, timezone
 
 @app.route('/')
 @app.route('/index')
@@ -79,9 +80,10 @@ def create_task():
         return redirect(url_for('index'))
     return render_template('create_task.html', form=form)
 
-@app.route('/task/<int:task_id>', methods=['GET', 'POST'])
+@app.route('/task/<int:task_id>')
+@app.route('/exam/<int:exam_id>/task/<int:task_id>')
 @login_required
-def task_view(task_id):
+def task_view(task_id, exam_id=None):
     task = db.session.get(Task, task_id)
     if task is None:
         flash('Task not found.')
@@ -89,7 +91,7 @@ def task_view(task_id):
     test_cases = db.session.execute(
         sa.select(TestCase).where(TestCase.task_id == task_id)
     ).scalars().all()
-    return render_template('task.html', task=task, test_cases=test_cases)
+    return render_template('task.html', task=task, test_cases=test_cases, exam_id=exam_id)
 
 @app.route('/task/<int:task_id>/add-test', methods=['GET', 'POST'])
 @login_required
@@ -108,11 +110,18 @@ def add_test_case(task_id):
         flash('Test case added!')
     return render_template('add_test_case.html', form=form, task_id=task_id)
 
-@app.route('/task/<int:task_id>/submit', methods=['GET', 'POST'])
+@app.route('/exam/<int:exam_id>/task/<int:task_id>/submit', methods=['GET', 'POST'])
 @login_required
-def submit_solution(task_id):
+def submit_solution(exam_id, task_id):
     if current_user.role != 'student':
         return redirect(url_for('index'))
+    
+    exam = db.session.get(Exam, exam_id)
+
+    if exam.deadline and datetime.utcnow() > exam.deadline:
+        flash('Deadline has passed!')
+        return redirect(url_for('exam_view', exam_id=exam_id))
+
     student_id = current_user.id
     form = SubmissionForm()
     if form.validate_on_submit():
@@ -121,7 +130,7 @@ def submit_solution(task_id):
 
         if len(code) > 50000:
             flash('File is too large')
-            return redirect(url_for('submit_solution', task_id=task_id))
+            return redirect(url_for('submit_solution', exam_id=exam_id, task_id=task_id))
         
         submission = Submission(
             task_id=task_id,
@@ -144,10 +153,12 @@ def submit_solution(task_id):
         db.session.commit()
         submission_id = submission.id
 
+        image = exam.docker_image or "python:3.11-slim"
+
         results = []
         all_passed = True
         for test in tests_data:
-            result = run_student_code(code, test["input"])
+            result = run_student_code(code, test["input"], image=image)
             passed = (result["status"] == "SUCCESS" 
                      and result["output"] == test["expected"].strip())
             results.append({
@@ -164,14 +175,58 @@ def submit_solution(task_id):
         submission_to_update.result = "PASSED" if all_passed else "FAILED"
         db.session.commit()
 
-        return render_template('results.html', results=results, submission=submission_to_update, task_id=task_id)
+        return render_template('results.html', results=results, submission=submission_to_update, task_id=task_id, exam_id=exam_id)
 
-    return render_template('submit_solution.html', form = form, task_id = task_id)
+    return render_template('submit_solution.html', form = form, task_id = task_id, exam_id=exam_id)
 
 @app.route('/exam/<int:exam_id>')
 @login_required
 def exam_view(exam_id):
-    return "To be implemented."
+    exam = db.session.get(Exam, exam_id)
+    if exam is None:
+        flash('Exam not found.')
+        return redirect(url_for('index'))
+
+    exam_tasks = db.session.execute(
+        sa.select(Task).join(ExamTask).where(ExamTask.exam_id == exam_id)
+    ).scalars().all()
+
+    if current_user.role == 'student':
+        is_assigned = db.session.execute(
+            sa.select(ExamStudent).where(
+                ExamStudent.exam_id == exam_id,
+                ExamStudent.student_id == current_user.id
+            )
+        ).scalars().first()
+
+        if not is_assigned:
+            flash('You are not assigned to this exam.')
+            return redirect(url_for('index'))
+
+        submissions = db.session.execute(
+            sa.select(Submission).where(
+                Submission.exam_id == exam_id,
+                Submission.user_id == current_user.id
+            )
+        ).scalars().all()
+
+        solved_task_ids = set()
+        attempted_task_ids = set()
+        for sub in submissions:
+            if sub.result == "PASSED":
+                solved_task_ids.add(sub.task_id)
+            else:
+                attempted_task_ids.add(sub.task_id)
+
+        return render_template('exam_student.html',
+            exam=exam,
+            tasks=exam_tasks,
+            solved_task_ids=solved_task_ids,
+            attempted_task_ids=attempted_task_ids
+        )
+
+    else:
+        return render_template('exam_lecturer.html', exam=exam, tasks=exam_tasks)
 
 @app.route('/create-exam', methods=['GET', 'POST'])
 @login_required

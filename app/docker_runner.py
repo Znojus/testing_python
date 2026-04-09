@@ -1,6 +1,6 @@
 import docker, tempfile, os
 
-def run_student_code(code, input_data, timeout=10):
+def run_student_code(code, input_data, timeout=10, image="python:3.11-slim"):
     client = docker.from_env()
 
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -11,7 +11,7 @@ def run_student_code(code, input_data, timeout=10):
 
         try:
             result = client.containers.run(
-                "python:3.11-slim",
+                image,
                 command=f"sh -c 'timeout {timeout} python /code/solution.py < /code/input.txt'",
                 volumes={tmpdir: {"bind": "/code", "mode": "ro"}},
                 remove=True,

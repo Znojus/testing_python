@@ -14,5 +14,9 @@
         </div>
         <hr>
     {% endfor %}
-    <a href="{{ url_for('task_view', task_id=task_id) }}">Back to task</a>
+    {% if exam_id %}
+        <a href="{{ url_for('exam_view', exam_id=exam_id) }}">Back to exam</a>
+    {% else %}
+        <a href="{{ url_for('index') }}">Back</a>
+    {% endif %}
 {% endblock %}
