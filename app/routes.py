@@ -252,6 +252,9 @@ def create_exam():
             except docker.errors.APIError:
                 flash('Could not connect to Docker. Is Docker Desktop running?')
                 return render_template('create_exam.html', form=form, tasks=tasks, students=students)
+            except Exception as e:
+                flash(f'Unexpected error: {e}')
+                return render_template('create_exam.html', form=form, tasks=tasks, students=students)
 
         exam = Exam(
             title=form.title.data,
