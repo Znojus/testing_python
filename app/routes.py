@@ -281,3 +281,25 @@ def create_exam():
 
     return render_template('create_exam.html', form=form, tasks=tasks, students=students)
 
+@app.route('/task/<int:task_id>/delete', methods=['POST'])
+@login_required
+def delete_task(task_id):
+    if current_user.role != 'lecturer':
+        flash('Only lecturers can delete tasks.')
+        return redirect(url_for('index'))
+    task = db.session.get(Task, task_id)
+    if task is None:
+        flash('Task not found')
+        return redirect(url_for('index'))
+
+    db.session.execute(
+        sa.delete(TestCase).where(TestCase.task_id == task_id)
+    )
+    db.session.execute(
+        sa.delete(ExamTask).where(ExamTask.task_id == task_id)
+    )
+    db.session.delete(task)
+    db.session.commit()
+    flash('Task deleted!')
+    return redirect(url_for('index'))
+

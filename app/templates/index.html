@@ -9,6 +9,10 @@
             <h3>{{ task.title }}</h3>
             <p>{{ task.description }}</p>
             <a href="{{ url_for('task_view', task_id=task.id) }}">View Task</a>
+            <form action="{{ url_for('delete_task', task_id=task.id) }}" method="post" style="display:inline;">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" onclick="return confirm('Delete this task and all its test cases?')">Delete</button>
+        </form>
         </div>
         <hr>
     {% endfor %}
