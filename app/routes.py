@@ -303,3 +303,18 @@ def delete_task(task_id):
     flash('Task deleted!')
     return redirect(url_for('index'))
 
+@app.route('/testcase/<int:testcase_id>/delete', methods=['POST'])
+@login_required
+def delete_test_case(testcase_id):
+    if current_user.role != 'lecturer':
+        flash('Only lecturers can delete test cases.')
+        return redirect(url_for('index'))
+    test = db.session.get(TestCase, testcase_id)
+    if test is None:
+        flash('Test case not found.')
+        return redirect(url_for('index'))
+    task_id = test.task_id
+    db.session.delete(test)
+    db.session.commit()
+    flash('Test case deleted!')
+    return redirect(url_for('task_view', task_id=task_id))
