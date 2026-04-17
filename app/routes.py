@@ -227,7 +227,44 @@ def exam_view(exam_id):
         )
 
     else:
-        return render_template('exam_lecturer.html', exam=exam, tasks=exam_tasks)
+        exam_students = db.session.execute(sa.select(User).join(ExamStudent).where(
+                ExamStudent.exam_id == exam_id
+            )
+        ).scalars().all()
+
+        all_submissions = db.session.execute(
+            sa.select(Submission).where(Submission.exam_id == exam_id)
+        ).scalars().all()
+
+        status_map = {}
+        for sub in all_submissions:
+            if sub.user_id not in status_map:
+                status_map[sub.user_id] = {}
+            current_status = status_map[sub.user_id].get(sub.task_id)
+            if current_status != "PASSED":
+                status_map[sub.user_id][sub.task_id] = sub.result
+
+        student_stats = []
+        for student in exam_students:
+            student_statuses = status_map.get(student.id, {})
+            solved = 0
+            for s in student_statuses.values():
+                if s == "PASSED":
+                    solved = solved + 1
+            attempted = 0
+            for s in student_statuses.values():
+                if s != "PASSED":
+                    attempted = attempted + 1
+            not_attempted = len(exam_tasks) - len(student_statuses)
+            student_stats.append({
+                "student": student,
+                "statuses": student_statuses,
+                "solved": solved,
+                "attempted": attempted,
+                "not_attempted": not_attempted
+            })
+
+        return render_template('exam_lecturer.html',exam=exam, tasks=exam_tasks, student_stats=student_stats)
 
 @app.route('/create-exam', methods=['GET', 'POST'])
 @login_required

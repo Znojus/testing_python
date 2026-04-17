@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>{{ exam.title }} ({{ exam.type }})</h1>
+
+    {% if exam.deadline %}
+        <p>Deadline: {{ exam.deadline.strftime('%Y-%m-%d %H:%M') }}</p>
+    {% endif %}
+
+    {% if exam.docker_image %}
+        <p>Docker image: {{ exam.docker_image }}</p>
+    {% endif %}
+
+    <h2>Student Progress</h2>
+    <table border="1" cellpadding="5" cellspacing="0">
+        <thead>
+            <tr>
+                <th>Student</th>
+                <th>Group</th>
+                {% for task in tasks %}
+                    <th>{{ task.title }}</th>
+                {% endfor %}
+                <th>Solved</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for stat in student_stats %}
+            <tr>
+                <td>{{ stat.student.username }}</td>
+                <td>{{ stat.student.group or '' }}</td>
+                {% for task in tasks %}
+                    <td style="text-align: center;">
+                        {% if stat.statuses.get(task.id) == "PASSED" %}
+                            <img src="{{ url_for('static', filename='icons/checkmark.png') }}" width="20" height="20" alt="Passed">
+                        {% elif stat.statuses.get(task.id) %}
+                            <img src="{{ url_for('static', filename='icons/x.png') }}" width="20" height="20" alt="Failed">
+                        {% else %}
+                            <img src="{{ url_for('static', filename='icons/questionmark.png') }}" width="20" height="20" alt="Not attempted">
+                        {% endif %}
+                    </td>
+                {% endfor %}
+                <td>{{ stat.solved }}</td>
+                <td>{{ tasks|length }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Tasks</h2>
+    {% for task in tasks %}
+        <div>
+            <a href="{{ url_for('task_view', task_id=task.id) }}">{{ task.title }}</a>
+        </div>
+    {% endfor %}
+
+    <a href="{{ url_for('index') }}">Back</a>
+{% endblock %}

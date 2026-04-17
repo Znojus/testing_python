@@ -21,7 +21,10 @@
     <h2>Exams:</h2>
     {% for exam in exams %}
         <div>
-            <h3>{{ exam.title }} ({{ exam.type }})</h3>
+            <h3>
+                <a href="{{ url_for('exam_view', exam_id=exam.id) }}">{{ exam.title }}</a>
+                ({{ exam.type }})
+            </h3>
         </div>
     {% endfor %}
     <a href="{{ url_for('create_exam') }}">Create New Exam</a>
