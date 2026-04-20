@@ -1,4 +1,4 @@
-import docker, tempfile, os, re
+import docker, tempfile, os, re, time
 from uuid import uuid4
 
 VALID_PATTERN = re.compile(
@@ -25,6 +25,8 @@ def run_student_code(code, input_data, timeout=10, image="python:3.11-slim", req
             file.write(input_data)
 
         custom_image = None
+        build_time = None
+
         if requirements:
             custom_image = f"submission-{uuid4().hex[:8]}"
             build_dir = tempfile.mkdtemp()
@@ -35,10 +37,13 @@ def run_student_code(code, input_data, timeout=10, image="python:3.11-slim", req
             with open(os.path.join(build_dir, "requirements.txt"), "w") as f:
                 f.write(requirements)
             try:
+                build_start = time.time()
                 client.images.build(path=build_dir, tag=custom_image)
+                build_time = round(time.time() - build_start, 3)
             except Exception as e:
-                return {"status": "ERROR", "output": f"Failed to install requirements: {str(e)}"}
+                return {"status": "ERROR", "output": f"Failed to install requirements: {str(e)}", "run_time": 0, "build_time": 0}
         try:
+            run_start = time.time()
             result = client.containers.run(
                 custom_image or image,
                 command=f"sh -c 'timeout {timeout} python /code/solution.py < /code/input.txt'",
@@ -53,22 +58,27 @@ def run_student_code(code, input_data, timeout=10, image="python:3.11-slim", req
                 cap_drop=["ALL"],
                 security_opt=["no-new-privileges:true"],
             )
+            run_time = round(time.time() - run_start, 3)
+
             return {
                 "status": "SUCCESS",
-                "output": result.decode("utf-8").strip()
+                "output": result.decode("utf-8").strip(),
+                "run_time": run_time,
+                "build_time": build_time
             }
         except docker.errors.ContainerError as e:
+            run_time = round(time.time() - run_start, 3)
             if e.exit_status == 124:
-                return {"status": "TIMEOUT", "output": "Time limit exceeded"}
+                return {"status": "TIMEOUT", "output": "Time limit exceeded", "run_time": run_time, "build_time": build_time}
             if e.exit_status == 137:
-                return {"status": "ERROR", "output": "Memory limit exceeded"}
-            return {"status": "ERROR", "output": str(e)}
+                return {"status": "ERROR", "output": "Memory limit exceeded", "run_time": run_time, "build_time": build_time}
+            return {"status": "ERROR", "output": str(e), "run_time": run_time, "build_time": build_time}
         except docker.errors.ImageNotFound:
-            return {"status": "ERROR", "output": "Docker image not found"}
+            return {"status": "ERROR", "output": "Docker image not found", "run_time": 0, "build_time": build_time}
         except docker.errors.APIError as e:
-            return {"status": "ERROR", "output": f"Docker error: {str(e)}"}
+            return {"status": "ERROR", "output": f"Docker error: {str(e)}", "run_time": 0, "build_time": build_time}
         except Exception as e:
-            return {"status": "ERROR", "output": f"System error: {str(e)}"}
+            return {"status": "ERROR", "output": f"System error: {str(e)}", "run_time": 0, "build_time": build_time}
         finally:
             if custom_image:
                 try:

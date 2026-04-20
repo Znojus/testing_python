@@ -57,6 +57,8 @@ class Submission(db.Model):
     code: so.Mapped[str] = so.mapped_column(sa.Text)
     result: so.Mapped[str] = so.mapped_column(sa.String(20), default="PENDING")
     submitted_at: so.Mapped[datetime] = so.mapped_column(index=True, default=datetime.utcnow)
+    build_time: so.Mapped[Optional[float]] = so.mapped_column(sa.Float, nullable=True)
+    total_run_time: so.Mapped[Optional[float]] = so.mapped_column(sa.Float, nullable=True)
 
     def __repr__(self):
         return '<Submission by User {} for Task {}>'.format(self.user_id, self.task_id)

@@ -2,11 +2,17 @@
 
 {% block content %}
     <h1>Result: {{ submission.result }}</h1>
+
+    {% if submission.build_time %}
+        <p>Image build time: {{ submission.build_time }}s</p>
+    {% endif %}
+    <p>Total run time: {{ submission.total_run_time }}s</p>
+
     {% for r in results %}
         <div>
             <p>
                 {% if r.passed %} OK {% else %} NOT PASSED {% endif %}
-                Compile status: {{ r.status }}
+                Compile status: {{ r.status }} ({{ r.run_time }}s)
             </p>
             <p>Input: {{ r.input }}</p>
             <p>Expected: {{ r.expected }}</p>
