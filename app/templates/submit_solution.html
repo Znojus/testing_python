@@ -11,6 +11,17 @@
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
+
+        {% if exam_allows_requirements %}
+        <p>
+            {{ form.requirements_file.label }}<br>
+            {{ form.requirements_file() }}<br>
+            {% for error in form.requirements_file.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        {% endif %}
+
         <p>{{ form.submit() }}</p>
     </form>
 {% endblock %}

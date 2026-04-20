@@ -46,6 +46,9 @@ class TestCaseForm(FlaskForm):
 
 class SubmissionForm(FlaskForm):
     code_file = FileField('Upload .py file', validators=[FileRequired(), FileAllowed(['py'], 'Only .py files')])
+    requirements_file = FileField('Upload requirements.txt (optional)', validators=[
+        FileAllowed(['txt'], 'Only .txt files!')
+    ])
     submit = SubmitField('Submit Solution')
 
 class ExamForm(FlaskForm):

@@ -1,4 +1,18 @@
-import docker, tempfile, os
+import docker, tempfile, os, re
+
+VALID_PATTERN = re.compile(
+    r'^[a-zA-Z0-9]([a-zA-Z0-9._-]*[a-zA-Z0-9])?(==|>=|<=|>|<|!=)?\d*\.?\d*\.?\d*$'
+)
+
+def validate_requirements(requirements_text):
+    for line in requirements_text.strip().split("\n"):
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        package_part = line.split(";")[0].strip()
+        if not VALID_PATTERN.match(package_part):
+            return False, f"Invalid format: {line}. Expected: package_name or package_name==version"
+    return True, "OK"
 
 def run_student_code(code, input_data, timeout=10, image="python:3.11-slim"):
     client = docker.from_env()

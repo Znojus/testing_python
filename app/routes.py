@@ -6,7 +6,7 @@ import sqlalchemy as sa
 from app import db
 from app.models import User, Task, TestCase, Submission, Exam, ExamStudent, ExamTask
 from urllib.parse import urlsplit
-from app.docker_runner import run_student_code
+from app.docker_runner import run_student_code, validate_requirements
 import docker
 from datetime import datetime, timezone
 
@@ -141,6 +141,16 @@ def submit_solution(exam_id, task_id):
         )
         db.session.add(submission)
 
+        requirements = None
+        if exam.requirements:
+            requirements = exam.requirements
+        elif exam.allow_requirements and form.requirements_file.data:
+            requirements = form.requirements_file.data.read().decode('utf-8')
+            valid, msg = validate_requirements(requirements)
+            if not valid:
+                flash(f'Invalid requirements.txt: {msg}')
+                return redirect(url_for('submit_solution', exam_id=exam_id, task_id=task_id))
+
         #testavimas ----------------
         test_cases = db.session.execute(
             sa.select(TestCase).where(TestCase.task_id == task_id)
@@ -178,7 +188,7 @@ def submit_solution(exam_id, task_id):
 
         return render_template('results.html', results=results, submission=submission_to_update, task_id=task_id, exam_id=exam_id)
 
-    return render_template('submit_solution.html', form = form, task_id = task_id, exam_id=exam_id)
+    return render_template('submit_solution.html', form=form, task_id=task_id, exam_id=exam_id, exam_allows_requirements=exam.allow_requirements)
 
 @app.route('/exam/<int:exam_id>')
 @login_required
