@@ -54,5 +54,8 @@ class ExamForm(FlaskForm):
                                         ('exam', 'Exam')])
     deadline = DateTimeLocalField('Deadline (optional)', validators=[Optional()])
     docker_image = StringField('Docker Image (optional)')
+    requirements_file = FileField('Upload requirements.txt (optional)', validators=[
+        FileAllowed(['txt'], 'Only .txt files')
+    ])
     allow_requirements = BooleanField('Allow students to upload requirements.txt')
     submit = SubmitField('Create Exam')

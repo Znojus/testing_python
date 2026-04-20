@@ -293,12 +293,17 @@ def create_exam():
                 flash(f'Unexpected error: {e}')
                 return render_template('create_exam.html', form=form, tasks=tasks, students=students)
 
+        requirements_text = None
+        if form.requirements_file.data:
+            requirements_text = form.requirements_file.data.read().decode('utf-8')
+
         exam = Exam(
             title=form.title.data,
             type=form.type.data,
             created_by=current_user.id,
             deadline=form.deadline.data,
             docker_image=form.docker_image.data or None,
+            requirements=requirements_text,
             allow_requirements=form.allow_requirements.data
         )
         db.session.add(exam)

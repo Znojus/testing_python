@@ -2,7 +2,7 @@
 
 {% block content %}
     <h1>Create Exam</h1>
-    <form action="" method="post" novalidate>
+    <form action="" method="post" enctype="multipart/form-data" novalidate>
         {{ form.hidden_tag() }}
         <p>
             {{ form.title.label }}<br>
@@ -22,6 +22,13 @@
         <p>
             {{ form.docker_image.label }}<br>
             {{ form.docker_image(size=64, placeholder="python:3.11-slim") }}
+        </p>
+        <p>
+            {{ form.requirements_file.label }}<br>
+            {{ form.requirements_file() }}<br>
+            {% for error in form.requirements_file.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
         </p>
         <p>
             {{ form.allow_requirements() }} {{ form.allow_requirements.label }}

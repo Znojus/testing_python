@@ -7,6 +7,11 @@
         <p>Deadline: {{ exam.deadline.strftime('%Y-%m-%d %H:%M') }}</p>
     {% endif %}
 
+    {% if exam.requirements %}
+        <h2>Available Packages</h2>
+        <pre>{{ exam.requirements }}</pre>
+    {% endif %}
+
     <h2>Tasks</h2>
     {% for task in tasks %}
         <div>

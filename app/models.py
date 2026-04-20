@@ -70,6 +70,7 @@ class Exam(db.Model):
     allow_requirements: so.Mapped[bool] = so.mapped_column(default=False)
     created_at: so.Mapped[datetime] = so.mapped_column(index=True, default=datetime.utcnow)
     deadline: so.Mapped[Optional[datetime]] = so.mapped_column(nullable=True)
+    requirements: so.Mapped[Optional[str]] = so.mapped_column(sa.Text, nullable=True)
 
 class ExamTask(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
