@@ -6,7 +6,7 @@ import sqlalchemy as sa
 from app import db
 from app.models import User, Task, TestCase, Submission, Exam, ExamStudent, ExamTask
 from urllib.parse import urlsplit
-from app.docker_runner import run_student_code, validate_requirements
+from app.docker_runner import run_all_tests, validate_requirements
 import docker
 from datetime import datetime, timezone
 
@@ -165,35 +165,19 @@ def submit_solution(exam_id, task_id):
         submission_id = submission.id
 
         image = exam.docker_image or "python:3.11-slim"
+        results, timing, error = run_all_tests(code, tests_data, image=image, requirements=requirements)
 
-        results = []
-        all_passed = True
-        total_run_time = 0
-        build_time = None
-
-        for test in tests_data:
-            result = run_student_code(code, test["input"], image=image, requirements=requirements)
-            passed = (result["status"] == "SUCCESS" 
-                     and result["output"] == test["expected"].strip())
-            total_run_time += result["run_time"]
-            if result["build_time"]:
-                build_time = result["build_time"]
-            results.append({
-                "input": test["input"],
-                "expected": test["expected"],
-                "actual": result["output"],
-                "status": result["status"],
-                "passed": passed,
-                "run_time": result["run_time"]
-            })
-            if not passed:
-                all_passed = False
+        if error:
+            submission_to_update = db.session.get(Submission, submission_id)
+            submission_to_update.result = "ERROR"
+            db.session.commit()
+            flash(error)
+            return redirect(url_for('submit_solution', exam_id=exam_id, task_id=task_id))
 
         submission_to_update = db.session.get(Submission, submission_id)
-        submission_to_update.result = "PASSED" if all_passed else "FAILED"
-        submission_to_update.build_time=build_time
-        submission_to_update.total_run_time=round(total_run_time, 3)
-        
+        submission_to_update.result = "PASSED" if timing["all_passed"] else "FAILED"
+        submission_to_update.build_time = timing["build_time"]
+        submission_to_update.total_run_time = timing["total_run_time"]
         db.session.commit()
 
         return render_template('results.html', results=results, submission=submission_to_update, task_id=task_id, exam_id=exam_id)
