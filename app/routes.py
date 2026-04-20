@@ -169,7 +169,7 @@ def submit_solution(exam_id, task_id):
         results = []
         all_passed = True
         for test in tests_data:
-            result = run_student_code(code, test["input"], image=image)
+            result = run_student_code(code, test["input"], image=image, requirements=requirements)
             passed = (result["status"] == "SUCCESS" 
                      and result["output"] == test["expected"].strip())
             results.append({

@@ -1,4 +1,5 @@
 import docker, tempfile, os, re
+from uuid import uuid4
 
 VALID_PATTERN = re.compile(
     r'^[a-zA-Z0-9]([a-zA-Z0-9._-]*[a-zA-Z0-9])?(==|>=|<=|>|<|!=)?\d*\.?\d*\.?\d*$'
@@ -14,7 +15,7 @@ def validate_requirements(requirements_text):
             return False, f"Invalid format: {line}. Expected: package_name or package_name==version"
     return True, "OK"
 
-def run_student_code(code, input_data, timeout=10, image="python:3.11-slim"):
+def run_student_code(code, input_data, timeout=10, image="python:3.11-slim", requirements=None):
     client = docker.from_env()
 
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -23,9 +24,23 @@ def run_student_code(code, input_data, timeout=10, image="python:3.11-slim"):
         with open(os.path.join(tmpdir, "input.txt"), "w") as file:
             file.write(input_data)
 
+        custom_image = None
+        if requirements:
+            custom_image = f"submission-{uuid4().hex[:8]}"
+            build_dir = tempfile.mkdtemp()
+            with open(os.path.join(build_dir, "Dockerfile"), "w") as f:
+                f.write(f"FROM {image}\n")
+                f.write("COPY requirements.txt /tmp/requirements.txt\n")
+                f.write("RUN pip install -q -r /tmp/requirements.txt\n")
+            with open(os.path.join(build_dir, "requirements.txt"), "w") as f:
+                f.write(requirements)
+            try:
+                client.images.build(path=build_dir, tag=custom_image)
+            except Exception as e:
+                return {"status": "ERROR", "output": f"Failed to install requirements: {str(e)}"}
         try:
             result = client.containers.run(
-                image,
+                custom_image or image,
                 command=f"sh -c 'timeout {timeout} python /code/solution.py < /code/input.txt'",
                 volumes={tmpdir: {"bind": "/code", "mode": "ro"}},
                 remove=True,
@@ -54,3 +69,9 @@ def run_student_code(code, input_data, timeout=10, image="python:3.11-slim"):
             return {"status": "ERROR", "output": f"Docker error: {str(e)}"}
         except Exception as e:
             return {"status": "ERROR", "output": f"System error: {str(e)}"}
+        finally:
+            if custom_image:
+                try:
+                    client.images.remove(custom_image, force=True)
+                except:
+                    pass
