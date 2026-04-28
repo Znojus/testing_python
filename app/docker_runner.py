@@ -6,6 +6,7 @@ client = docker.from_env()
 VALID_PATTERN = re.compile(
     r'^[a-zA-Z0-9]([a-zA-Z0-9._-]*[a-zA-Z0-9])?(==|>=|<=|>|<|!=)?\d*\.?\d*\.?\d*$'
 )
+OUTPUT_LIMIT = 1_000_000 
 
 def validate_requirements(requirements_text):
     for line in requirements_text.strip().split("\n"):
@@ -55,6 +56,14 @@ def run_student_code(code, input_data, timeout=10, image="python:3.11-slim", req
                 security_opt=["no-new-privileges:true"],
             )
             run_time = round(time.time() - run_start, 3)
+
+            output_bytes = result
+            if len(output_bytes) > OUTPUT_LIMIT:
+                return {
+                    "status": "ERROR",
+                    "output": "Output limit exceeded (max 1MB)",
+                    "run_time": round(time.time() - run_start, 3)
+                }
 
             return {
                 "status": "SUCCESS",
