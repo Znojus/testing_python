@@ -4,29 +4,31 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Welcome to the Auto Grader</title>
-        <link rel="stylesheet" href="../static/css/style.css">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     </head>
     <body>
-        <div>
-            Auto Grader:
-            <a href="{{ url_for('index') }}">Home</a>
-            {% if current_user.is_anonymous %}
-            <a href="{{ url_for('login') }}">Login</a>
-            {% else %}
-            <a href="{{ url_for('logout') }}">Logout</a>
-            <a href="{{ url_for('create_task') }}">Create Task</a>
+        <div class="page_frame">
+            <div>
+                Auto Grader:
+                <a href="{{ url_for('index') }}">Home</a>
+                {% if current_user.is_anonymous %}
+                <a href="{{ url_for('login') }}">Login</a>
+                {% else %}
+                <a href="{{ url_for('logout') }}">Logout</a>
+                <a href="{{ url_for('create_task') }}">Create Task</a>
+                {% endif %}
+            </div>
+            <hr>
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <ul>
+                {% for message in messages %}
+                <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
             {% endif %}
+            {% endwith %}
+            {% block content %} {% endblock %}
         </div>
-        <hr>
-        {% with messages = get_flashed_messages() %}
-        {% if messages %}
-        <ul>
-            {% for message in messages %}
-            <li>{{ message }}</li>
-            {% endfor %}
-        </ul>
-        {% endif %}
-        {% endwith %}
-        {% block content %} {% endblock %}
     </body>
 </html>

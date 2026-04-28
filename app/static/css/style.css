@@ -4,41 +4,74 @@
 
 body {
     font-family: Arial, sans-serif;
-    max-width: 900px;
     margin: 0 auto;
-    padding: 20px;
-    background-color: #ffffff;
+    padding: 40px;
+    background-color: #f1f1f1;
+}
+
+.page_frame {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
 
 .av_tasks, .exams {
-    display: flex;
-    flex-direction: column;
+    /* display: flex;
+    flex-wrap: wrap;
+    flex-direction: row; */
     gap: 10px;
     margin-bottom: 20px;
+
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 }
 
 .task, .exam {
     display: flex;
+    flex: 1 1 150px;
     align-items: center;
+    justify-content: center;
     flex-direction: column;
-    gap: 10px;
+    gap: 20px;
     /* border: 1px solid; */
     padding: 5px;
     border-radius: 10px;
-    -webkit-box-shadow: 5px 5px 9px 0px rgba(0,0,0,0.43); 
-    box-shadow: 5px 5px 9px 0px rgba(0,0,0,0.43);
+    -webkit-box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
     background-color: rgb(255, 253, 247);
+    padding: 10px 20px;
+}
+
+.exam {
+    gap: 5px;
+}
+
+.exam_type {
+    font-size: 0.9em;
+    font-weight: 600;
+    color: #949494;
 }
 
 .task, .exam, .av_tasks + a, .exams + a {
-    -webkit-box-shadow: 5px 5px 9px 0px rgba(0,0,0,0.43); 
-    box-shadow: 5px 5px 9px 0px rgba(0,0,0,0.43);
+    -webkit-box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); 
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
     background-color: rgb(255, 253, 247);
 }
 
 .task_title {
-    font-weight: 300;
+    font-weight: 600;
     font-size: 1.2em;
+    color: #414141;
+}
+
+.task_description,
+.task_title,
+.exam > a {
+    text-align: center;
+    width: 100%;
 }
 
 .av_tasks + a, .exams + a {
@@ -55,4 +88,63 @@ a {
     color: rgb(111, 111, 111);
     text-decoration: none;
     font-weight: 600;
+}
+
+button,
+.button,
+.av_tasks + a, .exams + a {
+  align-items: center;
+  background-color: #FFFFFF;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: .25rem;
+  box-shadow: rgba(0, 0, 0, 0.02) 0 1px 3px 0;
+  box-sizing: border-box;
+  color: rgba(0, 0, 0, 0.85);
+  cursor: pointer;
+  display: inline-flex;
+  font-family: system-ui,-apple-system,system-ui,"Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  justify-content: center;
+  line-height: 1.25;
+  margin: 0;
+  min-height: 3rem;
+  padding: calc(.875rem - 1px) calc(1.5rem - 1px);
+  position: relative;
+  text-decoration: none;
+  transition: all 250ms;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  vertical-align: baseline;
+  width: auto;
+}
+
+button:hover,
+button:focus,
+.button:hover,
+.button:focus,
+.av_tasks + a:hover,
+.exams + a:hover {
+  border-color: rgba(0, 0, 0, 0.15);
+  box-shadow: rgba(0, 0, 0, 0.1) 0 4px 12px;
+  color: rgba(0, 0, 0, 0.65);
+}
+
+button:hover,
+.button:hover,
+.av_tasks + a:hover,
+.exams + a:hover {
+  transform: translateY(-1px);
+}
+
+button:active,
+.button:hover,
+.av_tasks + a:active,
+.exams + a:active {
+  background-color: #F0F0F1;
+  border-color: rgba(0, 0, 0, 0.15);
+  box-shadow: rgba(0, 0, 0, 0.06) 0 2px 4px;
+  color: rgba(0, 0, 0, 0.65);
+  transform: translateY(0);
 }
