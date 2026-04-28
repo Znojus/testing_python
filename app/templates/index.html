@@ -4,28 +4,32 @@
     <h1>Hello, {{current_user.username}}!</h1>
 
     <h2>Available tasks:</h2>
-    {% for task in tasks %}
-        <div>
-            <h3>{{ task.title }}</h3>
-            <p>{{ task.description }}</p>
-            <a href="{{ url_for('task_view', task_id=task.id) }}">View Task</a>
-            <form action="{{ url_for('delete_task', task_id=task.id) }}" method="post" style="display:inline;">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            <button type="submit" onclick="return confirm('Delete this task and all its test cases?')">Delete</button>
-        </form>
-        </div>
-        <hr>
-    {% endfor %}
+
+    <div class="av_tasks">
+        {% for task in tasks %}
+            <div class="task">
+                <div class="task_title">{{ task.title }}</div>
+                <div class="task_description">{{ task.description }}</div>
+                <a href="{{ url_for('task_view', task_id=task.id) }}">View Task</a>
+                <form action="{{ url_for('delete_task', task_id=task.id) }}" method="post">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" onclick="return confirm('Delete this task and all its test cases?')">Delete</button>
+            </form>
+            </div>
+        {% endfor %}
+    </div>
     <a href="{{ url_for('create_task') }}">Create New Task</a>
 
     <h2>Exams:</h2>
-    {% for exam in exams %}
-        <div>
-            <h3>
-                <a href="{{ url_for('exam_view', exam_id=exam.id) }}">{{ exam.title }}</a>
-                ({{ exam.type }})
-            </h3>
-        </div>
-    {% endfor %}
+    <div class="exams">
+        {% for exam in exams %}
+            <div class="exam">
+                <h3>
+                    <a href="{{ url_for('exam_view', exam_id=exam.id) }}">{{ exam.title }}</a>
+                    ({{ exam.type }})
+                </h3>
+            </div>
+        {% endfor %}
+    </div>
     <a href="{{ url_for('create_exam') }}">Create New Exam</a>
 {% endblock %}
