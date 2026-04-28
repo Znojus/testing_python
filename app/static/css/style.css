@@ -1,19 +1,21 @@
 :root {
-  --accent-color: rgb(255, 255, 255);
+  --accent-color: #1985A1;
+  --white-color: #464646;
 }
 
 body {
     font-family: Arial, sans-serif;
     margin: 0 auto;
     padding: 40px;
-    background-color: #f1f1f1;
+    background-color: #DCDCDD;
+    color: var(--white-color);
 }
 
 .page_frame {
   max-width: 1100px;
   margin: 0 auto;
   padding: 20px;
-  background-color: white;
+  background-color: #C5C3C6;
   border-radius: 16px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
@@ -29,7 +31,12 @@ body {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 }
 
+.av_tasks form {
+    margin-top: auto;
+}
+
 .task, .exam {
+    background-color: #DCDCDD;
     display: flex;
     flex: 1 1 150px;
     align-items: center;
@@ -41,7 +48,6 @@ body {
     border-radius: 10px;
     -webkit-box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-    background-color: rgb(255, 253, 247);
     padding: 10px 20px;
 }
 
@@ -51,14 +57,12 @@ body {
 
 .exam_type {
     font-size: 0.9em;
-    font-weight: 600;
-    color: #949494;
+    color: var(--accent-color);
 }
 
 .task, .exam, .av_tasks + a, .exams + a {
     -webkit-box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); 
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-    background-color: rgb(255, 253, 247);
 }
 
 .task_title {
@@ -69,7 +73,7 @@ body {
 
 .task_description,
 .task_title,
-.exam > a {
+.exam > div {
     text-align: center;
     width: 100%;
 }
@@ -85,9 +89,23 @@ body {
 }
 
 a {
-    color: rgb(111, 111, 111);
+    color: #1985A1;
     text-decoration: none;
     font-weight: 600;
+}
+
+a:hover {
+    color: #a8a8a8;
+}
+
+a.exam:hover {
+    border-color: rgba(0, 0, 0, 0.15);
+    box-shadow: rgba(0, 0, 0, 0.192) 0 4px 12px;
+    color: rgba(0, 0, 0, 0.65);
+}
+
+a.exam {
+    color: #878787;
 }
 
 button,

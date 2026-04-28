@@ -23,10 +23,10 @@
     <h2>Exams:</h2>
     <div class="exams">
         {% for exam in exams %}
-            <div class="exam">
-                    <a href="{{ url_for('exam_view', exam_id=exam.id) }}">{{ exam.title }}</a>
-                    <div class="exam_type">{{ exam.type }}</div>
-            </div>
+            <a href="{{ url_for('exam_view', exam_id=exam.id) }}" class="exam">
+                <div>{{ exam.title }}</div>
+                <div class="exam_type">{{ exam.type }}</div>
+            </a>
         {% endfor %}
     </div>
     <a href="{{ url_for('create_exam') }}">Create New Exam</a>
