@@ -14,7 +14,7 @@
 
     <h2>Tasks</h2>
     {% for task in tasks %}
-        <div>
+        <div class="task-row">
             {% if task.id in solved_task_ids %}
                 <span style="color: green;">PASSED</span>
             {% elif task.id in attempted_task_ids %}
@@ -26,11 +26,11 @@
             <a href="{{ url_for('task_view', task_id=task.id, exam_id=exam.id) }}">{{ task.title }}</a>
 
             {% if task.id in solved_task_ids %}
-                <span style="color: green;">(Solved)</span>
+                <img src="{{ url_for('static', filename='icons/checkmark.png') }}" width="20" height="20" alt="Passed">
             {% elif task.id in attempted_task_ids %}
-                <span style="color: red;">(Attempted)</span>
+                <img src="{{ url_for('static', filename='icons/x.png') }}" width="20" height="20" alt="Failed">
             {% else %}
-                <span style="color: gray;">(Not attempted)</span>
+                <img src="{{ url_for('static', filename='icons/questionmark.png') }}" width="20" height="20" alt="Not attempted">
             {% endif %}
         </div>
     {% endfor %}

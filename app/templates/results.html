@@ -1,7 +1,16 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Result: {{ submission.result }}</h1>
+    <h1 class="task-row">
+        Result: 
+        {% if submission.result == 'FAILED'%}
+        <span style="color: red;">FAILED</span>
+        <img src="{{ url_for('static', filename='icons/x.png') }}" width="40" height="40" alt="Failed">
+        {% else %}
+        <span style="color: green;">PASSED</span>
+        <img src="{{ url_for('static', filename='icons/checkmark.png') }}" width="40" height="40" alt="Failed">
+        {% endif %}
+    </h1>
 
     {% if submission.build_time %}
         <p>Image build time: {{ submission.build_time }}s</p>
@@ -10,10 +19,14 @@
 
     {% for r in results %}
         <div>
-            <p>
-                {% if r.passed %} OK {% else %} NOT PASSED {% endif %}
+            <div class="task-row">
+                {% if r.passed %}
+                <img src="{{ url_for('static', filename='icons/checkmark.png') }}" width="20" height="20" alt="Passed"> 
+                {% else %}
+                <img src="{{ url_for('static', filename='icons/x.png') }}" width="20" height="20" alt="Failed">
+                {% endif %}
                 Compile status: {{ r.status }} ({{ r.run_time }}s)
-            </p>
+            </div>
             <p>Input: {{ r.input }}</p>
             <p>Expected: {{ r.expected }}</p>
             <p>Got: {{ r.actual }}</p>
