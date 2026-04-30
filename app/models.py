@@ -9,7 +9,8 @@ from app import login
 
 @login.user_loader
 def load_user(id):
-    return db.session.get(User, int(id))
+    user = db.session.get(User, int(id))
+    return user if user else None
 
 class User(UserMixin, db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
