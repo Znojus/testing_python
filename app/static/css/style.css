@@ -174,3 +174,20 @@ button:active,
     align-items: center;
     gap: 10px;
 }
+
+.flash-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.flash-msg {
+    padding: 14px 18px;
+    border-radius: 10px;
+    background-color: #EAF4F7;
+    border-bottom: 4px solid var(--accent-color);
+    color: var(--white-color);
+    font-weight: 500;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+}
