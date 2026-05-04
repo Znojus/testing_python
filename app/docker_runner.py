@@ -101,6 +101,8 @@ def run_all_tests(code, tests_data, timeout=10, image="python:3.11-slim", requir
     total_run_time = 0
 
     for test in tests_data:
+        test["expected"] = test["expected"].replace("\r\n", "\n")
+        test["input"] = test["input"].replace("\r\n", "\n")        
         result = run_student_code(code, test["input"], image=run_image, timeout=timeout)
         passed = (result["status"] == "SUCCESS"
                  and result["output"] == test["expected"].strip())
