@@ -191,3 +191,9 @@ button:active,
     font-weight: 500;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
 }
+
+.task_description,
+.test_description,
+.task_description_1 {
+    white-space: pre-line;
+}
