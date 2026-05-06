@@ -197,3 +197,7 @@ button:active,
 .task_description_1 {
     white-space: pre-line;
 }
+
+.compile-stat {
+    font-size: 0.8em;
+}

@@ -2,7 +2,7 @@
 
 {% block content %}
     <h1 class="task-row">
-        Result: 
+        Final task result: 
         {% if submission.result == 'FAILED'%}
         <span style="color: red;">FAILED</span>
         <img src="{{ url_for('static', filename='icons/x.png') }}" width="40" height="40" alt="Failed">
@@ -21,12 +21,12 @@
         <div>
             <div class="task-row">
                 {% if r.passed %}
-                <img src="{{ url_for('static', filename='icons/checkmark.png') }}" width="20" height="20" alt="Passed"> 
+                <img src="{{ url_for('static', filename='icons/checkmark.png') }}" width="20" height="20" alt="Passed"> Test Passed
                 {% else %}
-                <img src="{{ url_for('static', filename='icons/x.png') }}" width="20" height="20" alt="Failed">
+                <img src="{{ url_for('static', filename='icons/x.png') }}" width="20" height="20" alt="Failed"> Test Failed
                 {% endif %}
-                Compile status: {{ r.status }} ({{ r.run_time }}s)
             </div>
+            <p class="compile-stat">Compile status: {{ r.status }} (Test run time: {{ r.run_time }}s)</p>
             <p>Input: {{ r.input }}</p>
             <p>Expected: {{ r.expected }}</p>
             <p>Got: {{ r.actual }}</p>
