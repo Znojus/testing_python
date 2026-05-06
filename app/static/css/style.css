@@ -262,4 +262,23 @@ nav {
     font-size: 1.1em;
 }
 
+.exam-title {
+    font-weight: 600;
+    font-size: 1.1em;
+    color: var(--white-color);
+}
+
+.exam-deadline {
+    font-size: 0.85em;
+    color: var(--white-color);
+    margin-top: 4px;
+}
+
+.no-assignments {
+    text-align: center;
+    color: #888;
+    padding: 40px;
+    background-color: #EAF4F7;
+    border-radius: 10px;
+}
 

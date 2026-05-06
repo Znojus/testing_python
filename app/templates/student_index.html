@@ -5,17 +5,18 @@
 
     <h2>Your assignments</h2>
     {% if exams %}
-        {% for exam in exams %}
-            <div>
-                <h3>{{ exam.title }} ({{ exam.type }})</h3>
-                {% if exam.deadline %}
-                    <p>Deadline: {{ exam.deadline.strftime('%Y-%m-%d %H:%M') }}</p>
-                {% endif %}
-                <a href="{{ url_for('exam_view', exam_id=exam.id) }}">Open</a>
-            </div>
-            <hr>
-        {% endfor %}
+        <div class="exams">
+            {% for exam in exams %}
+                <a href="{{ url_for('exam_view', exam_id=exam.id) }}" class="exam">
+                    <div class="exam-title">{{ exam.title }}</div>
+                    <div class="exam_type">{{ exam.type }}</div>
+                    {% if exam.deadline %}
+                        <div class="exam-deadline">Deadline: {{ exam.deadline.strftime('%Y-%m-%d %H:%M') }}</div>
+                    {% endif %}
+                </a>
+            {% endfor %}
+        </div>
     {% else %}
-        <p>No assignments yet.</p>
+        <p class="no-assignments">No assignments yet.</p>
     {% endif %}
 {% endblock %}
