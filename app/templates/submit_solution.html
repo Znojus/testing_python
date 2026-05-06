@@ -1,27 +1,33 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Submit a solution</h1>
-    <form action="" method="post" enctype="multipart/form-data" novalidate>
-        {{ form.hidden_tag() }}
-        <p>
-            {{ form.code_file.label}}<br>
-            {{ form.code_file() }}<br>
-            {% for error in form.code_file.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
+    <div class="submit-form">
+        <h1>Submit a solution</h1>
+        <form action="" method="post" enctype="multipart/form-data" novalidate onsubmit="showLoading()">
+            {{ form.hidden_tag() }}
+            <p>
+                {{ form.code_file.label}}<br>
+                {{ form.code_file() }}<br>
+                {% for error in form.code_file.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+            {% if exam_allows_requirements %}
+            <p>
+                {{ form.requirements_file.label }}<br>
+                {{ form.requirements_file() }}<br>
+                {% for error in form.requirements_file.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+            {% endif %}
+            <p>{{ form.submit() }}</p>
+        </form>
+    </div>
 
-        {% if exam_allows_requirements %}
-        <p>
-            {{ form.requirements_file.label }}<br>
-            {{ form.requirements_file() }}<br>
-            {% for error in form.requirements_file.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
-        {% endif %}
-
-        <p>{{ form.submit() }}</p>
-    </form>
+    <div class="loading-screen hidden">
+        <div class="spinner"></div>
+        <p>Running tests, please wait...</p>
+        <p class="loading-timer">0s</p>
+    </div>  
 {% endblock %}
