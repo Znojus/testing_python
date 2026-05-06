@@ -2,6 +2,8 @@
   --accent-color: #1985A1;
   --white-color: #263843;
   --border-color: #D6E3E8;
+  --stat-green: #28A745;
+  --stat-red: #DC3545;
 }
 
 body {
@@ -282,3 +284,104 @@ nav {
     border-radius: 10px;
 }
 
+.results-header {
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    text-align: center;
+    border: 1px solid var(--border-color);
+}
+
+.results-header h1 {
+    justify-content: center;
+    margin: 0 0 10px 0;
+}
+
+.results-header.result-passed {
+    background-color: #EAF4F7;
+    border-left: 4px solid var(--stat-green);
+}
+
+.results-header.result-failed {
+    background-color: #FDF0F0;
+    border-left: 4px solid var(--stat-red);
+}
+
+.results-timing {
+    color: #666;
+    font-size: 0.9em;
+}
+
+.results-timing span {
+    margin: 0 10px;
+}
+
+.test-card {
+    background-color: #FFFFFF;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+}
+
+.test-card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    font-weight: 600;
+}
+
+.test-card.test-passed .test-card-header {
+    background-color: #EAF4F7;
+}
+
+.test-card.test-failed .test-card-header {
+    background-color: #FDF0F0;
+}
+
+.test-time {
+    margin-left: auto;
+    color: #888;
+    font-weight: normal;
+    font-size: 0.9em;
+}
+
+.test-card-body {
+    padding: 12px 16px;
+}
+
+.test-field {
+    margin-bottom: 8px;
+}
+
+.test-label {
+    font-weight: 600;
+    color: var(--white-color);
+    font-size: 0.9em;
+}
+
+.test-card pre {
+    background-color: #F3F8FA;
+    padding: 10px;
+    border-radius: 6px;
+    margin: 4px 0;
+    font-family: monospace;
+    font-size: 0.9em;
+    border: 1px solid var(--border-color);
+}
+
+pre.output-correct {
+    border-left: 2px solid var(--stat-green);
+}
+
+pre.output-wrong {
+    border-left: 2px solid var(--stat-red);
+}
+
+.test-status {
+    color: var(--stat-red);
+    font-weight: normal;
+    font-size: 0.85em;
+}

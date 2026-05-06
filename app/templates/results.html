@@ -1,37 +1,54 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1 class="task-row">
-        Final task result: 
-        {% if submission.result == 'FAILED'%}
-        <span style="color: red;">FAILED</span>
-        <img src="{{ url_for('static', filename='icons/x.png') }}" width="40" height="40" alt="Failed">
-        {% else %}
-        <span style="color: green;">PASSED</span>
-        <img src="{{ url_for('static', filename='icons/checkmark.png') }}" width="40" height="40" alt="Failed">
-        {% endif %}
-    </h1>
-
-    {% if submission.build_time %}
-        <p>Image build time: {{ submission.build_time }}s</p>
-    {% endif %}
-    <p>Total run time: {{ submission.total_run_time }}s</p>
+    <div class="results-header {% if submission.result == 'PASSED' %}result-passed{% else %}result-failed{% endif %}">
+        <h1 class="task-row">
+            {% if submission.result == 'FAILED'%}
+            <img src="{{ url_for('static', filename='icons/x.png') }}" width="40" height="40" alt="Failed">
+            Tests Failed
+            {% else %}
+            <img src="{{ url_for('static', filename='icons/checkmark.png') }}" width="40" height="40" alt="Failed">
+            All Tests Passed
+            {% endif %}
+        </h1>
+        <div class="results-timing">
+            {% if submission.build_time %}
+                <span>Build time: {{ submission.build_time }}s</span>
+            {% endif %}
+            <span>Total run time: {{ submission.total_run_time }}s</span>
+        </div>
+    </div>
 
     {% for r in results %}
-        <div>
-            <div class="task-row">
+        <div class="test-card {% if r.passed %}test-passed{% else %}test-failed{% endif %}">
+            <div class="test-card-header">
                 {% if r.passed %}
-                <img src="{{ url_for('static', filename='icons/checkmark.png') }}" width="20" height="20" alt="Passed"> Test Passed
+                <img src="{{ url_for('static', filename='icons/checkmark.png') }}" width="20" height="20" alt="Passed">
+                <span>Test {{ loop.index }} Passed</span>
                 {% else %}
-                <img src="{{ url_for('static', filename='icons/x.png') }}" width="20" height="20" alt="Failed"> Test Failed
+                <img src="{{ url_for('static', filename='icons/x.png') }}" width="20" height="20" alt="Failed">
+                <span>Test {{ loop.index }} Failed</span>
+                {% if r.status != 'SUCCESS' %}
+                    <span class="test-status">({{ r.status }})</span>
+                {% endif %}                
                 {% endif %}
+                <span class="test-time">{{ r.run_time }}s</span>
             </div>
-            <p class="compile-stat">Compile status: {{ r.status }} (Test run time: {{ r.run_time }}s)</p>
-            <p>Input: {{ r.input }}</p>
-            <p>Expected: {{ r.expected }}</p>
-            <p>Got: {{ r.actual }}</p>
+            <div class="test-card-body">
+                <div class="test-field">
+                    <span class="test-label">Input:</span>
+                    <pre>{{ r.input }}</pre>
+                </div>
+                <div class="test-field">
+                    <span class="test-label">Expected:</span>
+                    <pre>{{ r.expected }}</pre>
+                </div>
+                <div class="test-field">
+                    <span class="test-label">Got:</span>
+                    <pre class="{% if r.passed %}output-correct{% else %}output-wrong{% endif %}">{{ r.actual }}</pre>
+                </div>
+            </div>
         </div>
-        <hr>
     {% endfor %}
     {% if exam_id %}
         <a href="{{ url_for('exam_view', exam_id=exam_id) }}">Back to exam</a>
