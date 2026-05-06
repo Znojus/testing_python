@@ -212,8 +212,8 @@ button:active,
 }
 
 .spinner {
-    border: 6px solid #ddd;
-    border-top: 6px solid #333;
+    border: 6px solid var(--border-color);
+    border-top: 6px solid var(--accent-color);
     border-radius: 50%;
     width: 50px;
     height: 50px;
@@ -225,3 +225,41 @@ button:active,
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+nav {
+    background-color: var(--white-color);
+    padding: 15px 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.nav-brand {
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.nav-links a {
+    color: var(--border-color);
+    text-decoration: none;
+    margin-left: 15px;
+    font-weight: 600;
+}
+
+.nav-links a:hover {
+    color: var(--accent-color);
+    text-decoration: none;
+}
+
+.nav-user {
+    color: var(--accent-color);
+    margin-left: 15px;
+    font-weight: 600;
+    font-size: 1.1em;
+}
+
+
