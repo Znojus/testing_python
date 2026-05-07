@@ -3,7 +3,7 @@
 {% block content %}
     <h1>Hello, {{current_user.username}}!</h1>
 
-    <h2>Available tasks:</h2>
+    <h2>Task bank (available tasks):</h2>
 
     <div class="av_tasks">
         {% for task in tasks %}
@@ -18,7 +18,7 @@
             </div>
         {% endfor %}
     </div>
-    <a href="{{ url_for('create_task') }}">Create New Task</a>
+    <a href="{{ url_for('create_task') }}">Add a new Task</a>
 
     <h2>Exams:</h2>
     <div class="exams">
