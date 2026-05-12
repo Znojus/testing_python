@@ -9,6 +9,7 @@ from urllib.parse import urlsplit
 from app.docker_runner import run_all_tests, validate_requirements
 import docker
 from datetime import datetime, timezone
+from werkzeug.exceptions import RequestEntityTooLarge
 
 @app.route('/')
 @app.route('/index')
@@ -110,6 +111,11 @@ def add_test_case(task_id):
         flash('Test case added!')
     return render_template('add_test_case.html', form=form, task_id=task_id)
 
+@app.errorhandler(RequestEntityTooLarge)
+def handle_file_too_large(error):
+    flash("File is too large (Max 50KB)")
+    return redirect(request.referrer or url_for("index"))
+
 @app.route('/exam/<int:exam_id>/task/<int:task_id>/submit', methods=['GET', 'POST'])
 @login_required
 def submit_solution(exam_id, task_id):
@@ -127,10 +133,6 @@ def submit_solution(exam_id, task_id):
     if form.validate_on_submit():
         file = form.code_file.data
         code = file.read().decode('utf-8')
-
-        if len(code) > 50000:
-            flash('File is too large')
-            return redirect(url_for('submit_solution', exam_id=exam_id, task_id=task_id))
         
         submission = Submission(
             task_id=task_id,

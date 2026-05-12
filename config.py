@@ -7,4 +7,5 @@ class Config:
         'sqlite:///' + os.path.join(basedir, 'app.db')
     SQLALCHEMY_ENGINE_OPTIONS = {
     "connect_args": {"timeout": 30}
-}
+    }
+    MAX_CONTENT_LENGTH = 50 * 1024
