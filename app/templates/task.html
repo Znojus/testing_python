@@ -19,8 +19,10 @@
         {% if task.show_examples and test_cases|length > 0 %}
             <h2>Example Test Cases</h2>
             {% for test in test_cases[:2] %}
+                <h3>Example {{ loop.index }}</h3>
                 <p class="test_description">Input: {{ test.input_data }}</p>
                 <p class="test_description">Expected Output: {{ test.expected_output }}</p>
+                <br>
             {% endfor %}
             {% if test_cases|length > 2 %}
                 <p><i>+ {{ test_cases|length - 2 }} hidden test cases</i></p>
