@@ -8,4 +8,4 @@ class Config:
     SQLALCHEMY_ENGINE_OPTIONS = {
     "connect_args": {"timeout": 30}
     }
-    MAX_CONTENT_LENGTH = 50 * 1024
+    MAX_CONTENT_LENGTH = 60 * 1024

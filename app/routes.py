@@ -113,7 +113,7 @@ def add_test_case(task_id):
 
 @app.errorhandler(RequestEntityTooLarge)
 def handle_file_too_large(error):
-    flash("File is too large (Max 50KB)")
+    flash("File is too large (Max ~50KB)")
     return redirect(request.referrer or url_for("index"))
 
 @app.route('/exam/<int:exam_id>/task/<int:task_id>/submit', methods=['GET', 'POST'])
