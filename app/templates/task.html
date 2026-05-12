@@ -19,10 +19,10 @@
         {% if task.show_examples and test_cases|length > 0 %}
             <h2>Example Test Cases</h2>
             {% for test in test_cases[:2] %}
-                <h3>Example {{ loop.index }}</h3>
-                <p class="test_description">Input:
+                <h3 class="example">Example {{ loop.index }}</h3>
+                <p class="test_description"><span class="test-in-out">Input:</span>
                     {{ test.input_data }}</p>
-                <p class="test_description">Expected Output:
+                <p class="test_description"><span class="test-in-out">Expected Output:</span>
                     {{ test.expected_output }}</p>
                 <br>
             {% endfor %}

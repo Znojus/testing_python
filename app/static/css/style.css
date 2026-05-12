@@ -200,6 +200,14 @@ button:active,
     white-space: pre-line;
 }
 
+.test-in-out {
+    font-weight: bold;
+}
+
+.example {
+    color: #1985A1;
+}
+
 .compile-stat {
     font-size: 0.8em;
 }
